@@ -4,13 +4,14 @@ use piston::input::{Button, ButtonArgs, ButtonState};
 
 use driver::controls::*;
 use common::{state::*, animation::AnimationState, constants::*, fighter::*};
-use std::io::{Write, stdout};
+
+// use std::fmt;
 
 pub struct Player<'a> {
     f: Fighter<'a>,
     c: Controls,
-    is: State,
-    vs: State,
+    istate: State,
+    vstate: State,
     pos: Vec2d,
     vel: Vec2d,
     fvel: Vec2d,
@@ -19,13 +20,13 @@ pub struct Player<'a> {
 }
 
 impl<'a> Player<'a> {
-    pub fn new(f: Fighter<'a>, c: Controls) -> Self {
+    pub fn new(f: Fighter<'a>, c: Controls, pos: Vec2d) -> Self {
         Player {
             f: f,
             c: c,
-            is: State::new(IVal::NoInput.into()),
-            vs: State::new(VVal::Grounded.into()),
-            pos:  [100.0, 100.0],
+            istate: State::new(IVal::NoInput.into()),
+            vstate: State::new(VVal::Grounded.into()),
+            pos:  pos,
             vel:  [  0.0,   0.0],
             fvel: [  0.0,   0.0],
             // acc:  [  0.0,   0.0],
@@ -34,29 +35,29 @@ impl<'a> Player<'a> {
     }
     pub fn update(&mut self, dt: f64) {
         // println!("{:?}", self.is);
-        print!("{:?}\r", self.f.aa[self.f.astate]); stdout().flush().expect("error");
-        self.f.update(self.is.any());
-        if self.is.is_on(IVal::SInput) {
+
+        self.f.update(self.istate.any());
+        if self.istate.is_on(IVal::SInput) {
             self.pos = [100.0, 100.0];
             self.vel = [  0.0,   0.0];
             self.fvel = [  0.0,   0.0];
         }
         // let last_astate = self.f.astate;
-        if self.is.is_on(IVal::LInput | (IVal::RInput | IVal::DInput)) {
-            self.f.set_astate(AnimationState::Walk, true, self.is.rising(IVal::LInput | (IVal::RInput | IVal::DInput)));
+        if self.istate.is_on(IVal::LInput | (IVal::RInput | IVal::DInput)) {
+            self.f.set_astate(AnimationState::Walk, true, self.istate.rising(IVal::LInput | (IVal::RInput | IVal::DInput)));
         }
-        if self.is.rising(IVal::JInput) {
+        if self.istate.rising(IVal::JInput) {
             // println!("rising: {}", self.is);
-            if self.f.set_astate(AnimationState::Jump, true, self.is.rising(IVal::JInput)) {
+            if self.f.set_astate(AnimationState::Jump, true, self.istate.rising(IVal::JInput)) {
                 self.vel = mul([1.0, 0.0], self.vel);
                 self.jt.1 = true;
             }
         }
-        if self.is.rising(IVal::AInput) {
+        if self.istate.rising(IVal::AInput) {
             // println!("rising: {}", self.is);
-            self.f.set_astate(AnimationState::Jab, true, self.is.rising(IVal::AInput));
+            self.f.set_astate(AnimationState::Jab, true, self.istate.rising(IVal::AInput));
         }
-        if !self.is.any() || (self.is.is_on(IVal::JInput) && !self.is.rising(IVal::JInput)) {
+        if !self.istate.any() || (self.istate.is_on(IVal::JInput) && !self.istate.rising(IVal::JInput)) {
             self.f.set_astate(AnimationState::Idle, false, false);
         }
 
@@ -64,8 +65,8 @@ impl<'a> Player<'a> {
         self.move_pos(dt);
         // if last_astate != self.f.astate { println!("{}, {}", last_astate, self.f.astate); }
         self.update_vstate();
-        self.is.update();
-        self.vs.update();
+        self.istate.update();
+        self.vstate.update();
     }
     pub fn draw<G: Graphics>(&self, t: Matrix2d, g: &mut G) {
         self.f.draw(multiply(t, translate(self.pos)), g);
@@ -76,15 +77,15 @@ impl<'a> Player<'a> {
     fn update_vel(&mut self, dt: f64) {
         self.vel = [0.0, 0.0];
         let mut wvel = [0.0, 0.0];
-        if self.is.is_on(IVal::LInput) {
+        if self.istate.is_on(IVal::LInput) {
             wvel = add(wvel, LVEC);
-            self.vs += VVal::FacingLeft;
+            self.vstate += VVal::FacingLeft;
         }
-        if self.is.is_on(IVal::RInput) {
+        if self.istate.is_on(IVal::RInput) {
             wvel = add(wvel, RVEC);
-            self.vs -= VVal::FacingLeft;
+            self.vstate -= VVal::FacingLeft;
         }
-        if self.is.is_on(IVal::DInput) {
+        if self.istate.is_on(IVal::DInput) {
             wvel = add(wvel, DVEC);
         }
         wvel = mul_scalar(wvel, self.f.walkspeed);
@@ -98,10 +99,10 @@ impl<'a> Player<'a> {
             self.fvel = mul_scalar(DVEC, self.f.init_fallspeed);
         }
 
-        if self.vs.is_on(VVal::Grounded) {
+        if self.vstate.is_on(VVal::Grounded) {
             self.fvel = [0.0, 0.0];
         } else {
-            if self.vs.falling(VVal::Grounded) || self.is.rising(IVal::JInput) {
+            if self.vstate.falling(VVal::Grounded) || self.istate.rising(IVal::JInput) {
                 // println!("fell, {:?}", self.is);
                 self.fvel = mul_scalar(DVEC, self.f.init_fallspeed);
             }
@@ -121,11 +122,11 @@ impl<'a> Player<'a> {
                 // println!("{: >5}: {:021b}", format!("{:?}", k), u);
                 match b.state {
                     ButtonState::Press => {
-                        self.is += u;
+                        self.istate += u;
                         // println!("added:   {:032b}, {:?}", u, k);
                     },
                     ButtonState::Release => {
-                        self.is -= u;
+                        self.istate -= u;
                         // println!("removed: {:032b}, {:?}", u, k);
                     }
                 }
@@ -133,6 +134,10 @@ impl<'a> Player<'a> {
         }
     }
     fn update_vstate(&mut self) {
-        self.vs -= VVal::Grounded;
+        self.vstate -= VVal::Grounded;
+    }
+
+    pub fn get_debug_state(&mut self) -> String {
+        format!("{:?}", self.f.aa[self.f.astate])
     }
 }
