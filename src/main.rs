@@ -1,8 +1,17 @@
 #[macro_use]
 extern crate enum_display_derive;
 
-extern crate piston_window;
-use piston_window::*;
+extern crate glutin_window;
+extern crate graphics;
+extern crate opengl_graphics;
+extern crate piston;
+
+use glutin_window::GlutinWindow as Window;
+use opengl_graphics::{GlGraphics, OpenGL};
+use graphics::clear;
+use piston::event_loop::{EventSettings, Events};
+use piston::input::{RenderArgs, RenderEvent, ButtonArgs, ButtonEvent, UpdateArgs, UpdateEvent};
+use piston::window::WindowSettings;
 
 #[macro_use]
 mod common;
@@ -14,46 +23,82 @@ use driver::controls::*;
 use fighters::test::*;
 use common::stage::Stage;
 
+pub struct OPF<'a> {
+    gl: GlGraphics, // OpenGL drawing backend.
+    players: [Option<Player<'a>>; 4],
+    stage: Stage<'a>,
+}
+
+impl<'a> OPF<'a> {
+    fn render(&mut self, args: &RenderArgs) {
+        let stage = &self.stage;
+        let players = &self.players;
+
+        self.gl.draw(args.viewport(), |c, gl| {
+            clear([0.0, 0.0, 0.0, 1.0], gl);
+
+            stage.draw(c.transform, gl);
+
+            for p in players.iter() {
+                match p {
+                    Some(p) => p.draw(c.transform, gl),
+                    None => ()
+                }
+            }
+        });
+    }
+    fn update_inputs(&mut self, args: &ButtonArgs) {
+        for p in self.players.iter_mut() {
+            match p {
+                Some(p) => p.update_inputs(args),
+                None => ()
+            }
+        }
+    }
+    fn update(&mut self, args: &UpdateArgs) {
+        for p in self.players.iter_mut() {
+            match p {
+                Some(p) => p.update(args.dt),
+                None => ()
+            }
+        }
+    }
+}
+
 fn main() {
+    println!("enter main");
     //init
-    let mut window: PistonWindow = WindowSettings::new("Hello Piston!", WINDOW_SIZE)
+    let opengl = OpenGL::V3_2;
+    let mut window: Window = WindowSettings::new("Hello Piston!", WINDOW_SIZE)
         .exit_on_esc(true)
         .build()
         .unwrap_or_else(|e| { panic!("Failed to build PistonWindow: {}", e) });
 
-    window = window.ups(FRAMES_PER_SECOND);
-    // window.set_max_fps(FRAMES_PER_SECOND);
-    let mut p1 = Player::new(test::new(), controls1());
-    let stage = Stage::default();
+    let mut opf = OPF {
+        gl: GlGraphics::new(opengl),
+        players: [
+            Some(Player::new(test::new(), controls1())),
+            None,
+            None,
+            None
+            ],
+        stage: Stage::default(),
+    };
+
     //game loop
-    while let Some(e) = window.next() {
-        match e {
-            Event::Input(i) => {
-                match i {
-                    Input::Button(b) => {
-                        p1.update_inputs(&b)
-                    },
-                    _ => {}
-                }
-            },
-            Event::Loop(l) => {
-                match l {
-                    Loop::Render(_r) => {
+    let mut es = EventSettings::new();
+    es.ups = FRAMES_PER_SECOND;
+    let mut events = Events::new(es);
+    while let Some(e) = events.next(&mut window) {
 
-                        window.draw_2d(&e, |c, g| {
-                            clear([0.0, 0.0, 0.0, 1.0], g);
-                            stage.draw(c.transform, g);
-                            p1.draw(c.transform, g);
-                        });
-                    },
-                    Loop::Update(u) => {
-                        p1.update(u.dt);
-                    },
-                    _ => {}
-                }
-
-            }
-            _ => {}
+        if let Some(args) = e.button_args() {
+            opf.update_inputs(&args);
+        }
+        if let Some(args) = e.render_args() {
+            opf.render(&args);
+        }
+        if let Some(args) = e.update_args() {
+            opf.update(&args);
         }
     }
 }

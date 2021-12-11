@@ -1,4 +1,4 @@
-use piston_window::types::{Color, Radius, Vec2d};
+use graphics::types::{Color, Radius, Vec2d};
 
 pub const WINDOW_SIZE: (f64, f64) = (320.0, 240.0);
 pub const FRAMES_PER_SECOND: u64 = 30;

@@ -1,8 +1,10 @@
-use piston_window::types::{Vec2d};
-use piston_window::{Graphics, Button, ButtonArgs, ButtonState, math::*};
+use graphics::math::*;
+use graphics::Graphics;
+use piston::input::{Button, ButtonArgs, ButtonState};
 
 use driver::controls::*;
 use common::{state::*, animation::AnimationState, constants::*, fighter::*};
+use std::io::{Write, stdout};
 
 pub struct Player<'a> {
     f: Fighter<'a>,
@@ -12,7 +14,7 @@ pub struct Player<'a> {
     pos: Vec2d,
     vel: Vec2d,
     fvel: Vec2d,
-    acc: Vec2d,
+    // acc: Vec2d,
     jt: (f64, bool),
 }
 
@@ -26,13 +28,13 @@ impl<'a> Player<'a> {
             pos:  [100.0, 100.0],
             vel:  [  0.0,   0.0],
             fvel: [  0.0,   0.0],
-            acc:  [  0.0,   0.0],
+            // acc:  [  0.0,   0.0],
             jt:   (0.0, false),
         }
     }
     pub fn update(&mut self, dt: f64) {
         // println!("{:?}", self.is);
-        println!("{:?}", self.f.aa[self.f.astate]);
+        print!("{:?}\r", self.f.aa[self.f.astate]); stdout().flush().expect("error");
         self.f.update(self.is.any());
         if self.is.is_on(IVal::SInput) {
             self.pos = [100.0, 100.0];

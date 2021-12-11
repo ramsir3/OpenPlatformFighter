@@ -1,6 +1,6 @@
-extern crate piston_window;
-use piston_window::types::{Scalar};
-use piston_window::{Graphics, math::Matrix2d};
+extern crate graphics;
+use graphics::Graphics;
+use graphics::math::{Scalar, Matrix2d};
 use std::ops::{Index, IndexMut, AddAssign};
 use common::animation::{AnimationState, Animation, N_ANIM_STATES};
 use common::frame::FrameData;

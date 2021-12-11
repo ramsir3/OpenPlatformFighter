@@ -1,4 +1,4 @@
-use piston_window::{Graphics, math::*, types::{Color, Line, Polygon, Vec2d}, line, polygon};
+use graphics::{Graphics, math::*, types::*, line, polygon};
 use common::constants::*;
 
 pub struct Platform<'a>(pub Polygon<'a>, pub Color);
@@ -44,7 +44,7 @@ impl<'a> Default for Stage<'a> {
                     [W, 0.0],
                     [W, H],
                     [0.0, H],
-                ], 
+                ],
                 PLATFORM_COLOR
                 )
             ],

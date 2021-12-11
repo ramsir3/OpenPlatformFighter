@@ -1,5 +1,6 @@
+#![allow(dead_code)]
 use std::collections::HashMap;
-use piston_window::{Key};
+use piston::input::{Key};
 use common::state::IVal;
 
 pub type Controls = HashMap<Key, u32>;

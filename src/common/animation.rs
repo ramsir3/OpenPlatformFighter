@@ -1,6 +1,8 @@
 use std::fmt;
 use std::fmt::Display;
-use piston_window::{Graphics, math::Matrix2d};
+use graphics::Graphics;
+use graphics::math::Matrix2d;
+
 use common::frame::*;
 
 pub const N_ANIM_STATES: usize = 4;
