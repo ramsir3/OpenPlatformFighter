@@ -60,7 +60,7 @@ impl<'a> Fighter<'a> {
             self.aa[self.astate].reset();
             return true
         }
-        return false
+        false
     }
 }
 impl<'a> Default for Fighter<'a> {
@@ -70,7 +70,7 @@ impl<'a> Default for Fighter<'a> {
         aa += Animation::new(AnimationState::Walk, vec![FrameData::default()], vec![Default::default()]);
         // aa += Animation {state: AnimationState::Idle, grabboxes:Some(FrameData::default()), ..Default::default()};
         Fighter {
-            aa: aa,
+            aa,
             astate: AnimationState::Idle,
             weight: 10.0,
             walkspeed: 10.0,

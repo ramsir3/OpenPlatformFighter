@@ -3,20 +3,11 @@ use graphics::{Graphics, math::*, types::*, ellipse, Ellipse};
 use common::constants::{BOX_COLORS, N_SIDES};
 use std::fmt;
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default)]
 pub struct FrameState {
     cur_frame: usize,
     end_frame: usize,
     faf_frame: usize,
-}
-impl Default for FrameState {
-    fn default() -> Self {
-        FrameState {
-            cur_frame: 0,
-            end_frame: 0,
-            faf_frame: 0,
-        }
-    }
 }
 
 #[derive(Copy, Clone)]
@@ -35,12 +26,12 @@ impl fmt::Display for FrameType {
 impl FrameType {
     pub fn single(end_frame: usize, faf_frame: usize) -> Self {
         FrameType::Single(FrameState {
-            cur_frame: 0, end_frame: end_frame, faf_frame: faf_frame,
+            cur_frame: 0, end_frame, faf_frame,
         })
     }
     pub fn repeat(end_frame: usize, faf_frame: usize) -> Self {
         FrameType::Repeat(FrameState {
-            cur_frame: 0, end_frame: end_frame, faf_frame: faf_frame,
+            cur_frame: 0, end_frame, faf_frame,
         })
     }
     pub fn cur_frame(&self) -> usize {

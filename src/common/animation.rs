@@ -33,9 +33,9 @@ impl<'a> Animation<'a> {
         let np = partials.len();
         if np != frametypes.len() {panic!("frametypes len and partials len must be equal");}
         Animation {
-            state: state,
-            partials: partials,
-            frametypes: frametypes,
+            state,
+            partials,
+            frametypes,
             num_partials: np,
             cur_partial: 0
         }

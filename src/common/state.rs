@@ -12,10 +12,10 @@ impl State {
         self.1 = self.0;
     }
     fn activate<T: Into<u32>>(&mut self, o: T) {
-        self.0 = self.0 | o.into();
+        self.0 |= o.into();
     }
     fn deactivate<T: Into<u32>>(&mut self, o: T) {
-        self.0 = self.0 & !o.into();
+        self.0 &= !o.into();
     }
     pub fn is_on<T: Into<u32>>(&self, o: T) -> bool {
         self.0 & o.into() != 0
@@ -30,10 +30,10 @@ impl State {
     }
     pub fn falling<T: Into<u32>>(&self, o: T) -> bool {
         let oo = o.into();
-        (!(self.0 & oo != 0)) && (self.1 & oo != 0)
+        self.0 & oo == 0 && (self.1 & oo != 0)
     }
     pub fn any(&self) -> bool {
-        (self.0 & !0) != 0
+        self.0 != 0
     }
     pub fn get(&self) -> u32 {
         self.0
@@ -82,24 +82,24 @@ impl fmt::Debug for State {
 
 #[derive(Clone, Copy)]
 pub enum IVal {
-    NoInput  = 0b0_0000_0000_0000_0000,
-    JInput   = 0b1_0000_0000_0000_0000,
-    LInput   = 0b0_1000_0000_0000_0000,
-    RInput   = 0b0_0100_0000_0000_0000,
-    UInput   = 0b0_0010_0000_0000_0000,
-    DInput   = 0b0_0001_0000_0000_0000,
-    BInput   = 0b0_0000_1000_0000_0000,
-    AInput   = 0b0_0000_0100_0000_0000,
-    SInput   = 0b0_0000_0010_0000_0000,
-    ZInput   = 0b0_0000_0001_0000_0000,
-    CRInput  = 0b0_0000_0000_1000_0000,
-    CLInput  = 0b0_0000_0000_0100_0000,
-    CDInput  = 0b0_0000_0000_0010_0000,
-    CUInput  = 0b0_0000_0000_0001_0000,
-    TRInput  = 0b0_0000_0000_0000_1000,
-    TLInput  = 0b0_0000_0000_0000_0100,
-    TDInput  = 0b0_0000_0000_0000_0010,
-    TUInput  = 0b0_0000_0000_0000_0001,
+    None = 0b0_0000_0000_0000_0000,
+    J    = 0b1_0000_0000_0000_0000,
+    L    = 0b0_1000_0000_0000_0000,
+    R    = 0b0_0100_0000_0000_0000,
+    U    = 0b0_0010_0000_0000_0000,
+    D    = 0b0_0001_0000_0000_0000,
+    B    = 0b0_0000_1000_0000_0000,
+    A    = 0b0_0000_0100_0000_0000,
+    S    = 0b0_0000_0010_0000_0000,
+    Z    = 0b0_0000_0001_0000_0000,
+    CR   = 0b0_0000_0000_1000_0000,
+    CL   = 0b0_0000_0000_0100_0000,
+    CD   = 0b0_0000_0000_0010_0000,
+    CU   = 0b0_0000_0000_0001_0000,
+    TR   = 0b0_0000_0000_0000_1000,
+    TL   = 0b0_0000_0000_0000_0100,
+    TD   = 0b0_0000_0000_0000_0010,
+    TU   = 0b0_0000_0000_0000_0001,
 }
 impl Into<u32> for IVal {
     fn into(self) -> u32 {

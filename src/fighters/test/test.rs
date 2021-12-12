@@ -97,7 +97,7 @@ pub fn new<'a>() -> Fighter<'a> {
         vec![FrameType::single(6,0)],
     );
     Fighter {
-        aa: aa,
+        aa,
         astate: AnimationState::Idle,
         weight:  10.0,
         walkspeed:  100.0,

@@ -5,26 +5,29 @@ use common::state::IVal;
 
 pub type Controls = HashMap<Key, u32>;
 
+pub fn controls0() -> Controls {
+    [].iter().cloned().collect()
+}
 pub fn controls1() -> Controls {
     [
-        (Key::A,     IVal::LInput as u32),
-        (Key::D,     IVal::RInput as u32),
-        (Key::S,     IVal::DInput as u32),
-        (Key::W,     IVal::JInput | IVal::UInput),
-        (Key::L,     IVal::JInput as u32),
-        (Key::O,     IVal::BInput as u32),
-        (Key::I,     IVal::AInput as u32),
-        (Key::Space, IVal::SInput as u32),
-        (Key::J,     IVal::ZInput as u32),
+        (Key::A,     IVal::L as u32),
+        (Key::D,     IVal::R as u32),
+        (Key::S,     IVal::D as u32),
+        (Key::W,     IVal::J | IVal::U),
+        (Key::L,     IVal::J as u32),
+        (Key::O,     IVal::B as u32),
+        (Key::I,     IVal::A as u32),
+        (Key::Space, IVal::S as u32),
+        (Key::J,     IVal::Z as u32),
     ].iter().cloned().collect()
 }
 
 pub fn controls2() -> Controls {
     [
-        (Key::Left,  IVal::LInput as u32),
-        (Key::Right, IVal::RInput as u32),
-        (Key::Down,  IVal::DInput as u32),
-        (Key::Up,    IVal::JInput as u32),
-        // (Key::W,     IVal::UInput),
+        (Key::Left,  IVal::L as u32),
+        (Key::Right, IVal::R as u32),
+        (Key::Down,  IVal::D as u32),
+        (Key::Up,    IVal::J as u32),
+        // (Key::W,     IVal::U),
     ].iter().cloned().collect()
 }

@@ -23,6 +23,8 @@ use driver::controls::*;
 use fighters::test::*;
 use common::stage::Stage;
 
+use std::io::{stdout, Write};
+
 pub struct OPF<'a> {
     gl: GlGraphics, // OpenGL drawing backend.
     players: [Option<Player<'a>>; 4],
@@ -30,6 +32,45 @@ pub struct OPF<'a> {
 }
 
 impl<'a> OPF<'a> {
+    #[allow(dead_code)]
+    fn setup1(opengl: OpenGL) -> OPF<'a> {
+        OPF {
+            gl: GlGraphics::new(opengl),
+            players: [
+                Some(Player::new(test::new(), controls1(), [100.0, 100.0])),
+                None,
+                None,
+                None
+                ],
+            stage: Stage::default(),
+        }
+    }
+    #[allow(dead_code)]
+    fn setup2(opengl: OpenGL) -> OPF<'a> {
+        OPF {
+            gl: GlGraphics::new(opengl),
+            players: [
+                Some(Player::new(test::new(), controls1(), [100.0, 100.0])),
+                Some(Player::new(test::new(), controls2(), [175.0, 100.0])),
+                None,
+                None
+                ],
+            stage: Stage::default(),
+        }
+    }
+    #[allow(dead_code)]
+    fn setup4(opengl: OpenGL) -> OPF<'a> {
+        OPF {
+            gl: GlGraphics::new(opengl),
+            players: [
+                Some(Player::new(test::new(), controls1(), [100.0, 100.0])),
+                Some(Player::new(test::new(), controls2(), [125.0, 100.0])),
+                Some(Player::new(test::new(), controls0(), [150.0, 100.0])),
+                Some(Player::new(test::new(), controls0(), [175.0, 100.0])),
+                ],
+            stage: Stage::default(),
+        }
+    }
     fn render(&mut self, args: &RenderArgs) {
         let stage = &self.stage;
         let players = &self.players;
@@ -63,6 +104,19 @@ impl<'a> OPF<'a> {
             }
         }
     }
+    #[allow(dead_code)]
+    fn print_player_state(&mut self) {
+        for p in self.players.iter_mut() {
+            match p {
+                Some(p) => {
+                    print!("{:}\t", p.get_debug_state());
+                },
+                None => ()
+            }
+        }
+        print!("\r");
+        stdout().flush();
+    }
 }
 
 fn main() {
@@ -74,17 +128,7 @@ fn main() {
         .build()
         .unwrap_or_else(|e| { panic!("Failed to build PistonWindow: {}", e) });
 
-    let mut opf = OPF {
-        gl: GlGraphics::new(opengl),
-        players: [
-            Some(Player::new(test::new(), controls1())),
-            None,
-            None,
-            None
-            ],
-        stage: Stage::default(),
-    };
-
+    let mut opf = OPF::setup4(opengl);
     //game loop
     let mut es = EventSettings::new();
     es.ups = FRAMES_PER_SECOND;
@@ -99,6 +143,7 @@ fn main() {
         }
         if let Some(args) = e.update_args() {
             opf.update(&args);
+            opf.print_player_state();
         }
     }
 }
