@@ -3,15 +3,15 @@ use graphics::Graphics;
 use piston::input::{Button, ButtonArgs, ButtonState};
 
 use driver::controls::*;
-use common::{state::*, animation::AnimationState, constants::*, fighter::*};
+use common::{states::*, stateticker::*, animation::AnimationState, constants::*, fighter::*};
 
 // use std::fmt;
 
 pub struct Player<'a> {
     f: Fighter<'a>,
     c: Controls,
-    istate: State,
-    vstate: State,
+    istate: InputValueTicker,
+    vstate: VolatileValueTicker,
     pos: Vec2d,
     vel: Vec2d,
     fvel: Vec2d,
@@ -24,8 +24,8 @@ impl<'a> Player<'a> {
         Player {
             f,
             c,
-            istate: State::new(IVal::None.into()),
-            vstate: State::new(VVal::Grounded.into()),
+            istate: InputValueTicker::new(InputValue::empty()),
+            vstate: VolatileValueTicker::new(VolatileValue::GROUNDED),
             pos,
             vel:  [  0.0,   0.0],
             fvel: [  0.0,   0.0],
@@ -36,28 +36,28 @@ impl<'a> Player<'a> {
     pub fn update(&mut self, dt: f64) {
         // println!("{:?}", self.is);
 
-        self.f.update(self.istate.any());
-        if self.istate.is_on(IVal::S) {
+        self.f.update(!self.istate.is_empty());
+        if self.istate.is_on(InputValue::S) {
             self.pos = [100.0, 100.0];
             self.vel = [  0.0,   0.0];
             self.fvel = [  0.0,   0.0];
         }
         // let last_astate = self.f.astate;
-        if self.istate.is_on(IVal::L | (IVal::R | IVal::D)) {
-            self.f.set_astate(AnimationState::Walk, true, self.istate.rising(IVal::L | (IVal::R | IVal::D)));
+        if self.istate.is_on(InputValue::L | (InputValue::R | InputValue::D)) {
+            self.f.set_astate(AnimationState::Walk, true, self.istate.rising(InputValue::L | (InputValue::R | InputValue::D)));
         }
-        if self.istate.rising(IVal::J) {
+        if self.istate.rising(InputValue::J) {
             // println!("rising: {}", self.is);
-            if self.f.set_astate(AnimationState::Jump, true, self.istate.rising(IVal::J)) {
+            if self.f.set_astate(AnimationState::Jump, true, self.istate.rising(InputValue::J)) {
                 self.vel = mul([1.0, 0.0], self.vel);
                 self.jt.1 = true;
             }
         }
-        if self.istate.rising(IVal::A) {
+        if self.istate.rising(InputValue::A) {
             // println!("rising: {}", self.is);
-            self.f.set_astate(AnimationState::Jab, true, self.istate.rising(IVal::A));
+            self.f.set_astate(AnimationState::Jab, true, self.istate.rising(InputValue::A));
         }
-        if !self.istate.any() || (self.istate.is_on(IVal::J) && !self.istate.rising(IVal::J)) {
+        if self.istate.is_empty() || (self.istate.is_on(InputValue::J) && !self.istate.rising(InputValue::J)) {
             self.f.set_astate(AnimationState::Idle, false, false);
         }
 
@@ -77,15 +77,15 @@ impl<'a> Player<'a> {
     fn update_vel(&mut self, dt: f64) {
         self.vel = [0.0, 0.0];
         let mut wvel = [0.0, 0.0];
-        if self.istate.is_on(IVal::L) {
+        if self.istate.is_on(InputValue::L) {
             wvel = add(wvel, LVEC);
-            self.vstate += VVal::FacingLeft;
+            self.vstate |= VolatileValue::FACINGLEFT;
         }
-        if self.istate.is_on(IVal::R) {
+        if self.istate.is_on(InputValue::R) {
             wvel = add(wvel, RVEC);
-            self.vstate -= VVal::FacingLeft;
+            self.vstate -= VolatileValue::FACINGLEFT;
         }
-        if self.istate.is_on(IVal::D) {
+        if self.istate.is_on(InputValue::D) {
             wvel = add(wvel, DVEC);
         }
         wvel = mul_scalar(wvel, self.f.walkspeed);
@@ -99,10 +99,10 @@ impl<'a> Player<'a> {
             self.fvel = mul_scalar(DVEC, self.f.init_fallspeed);
         }
 
-        if self.vstate.is_on(VVal::Grounded) {
+        if self.vstate.is_on(VolatileValue::GROUNDED) {
             self.fvel = [0.0, 0.0];
         } else {
-            if self.vstate.falling(VVal::Grounded) || self.istate.rising(IVal::J) {
+            if self.vstate.falling(VolatileValue::GROUNDED) || self.istate.rising(InputValue::J) {
                 // println!("fell, {:?}", self.is);
                 self.fvel = mul_scalar(DVEC, self.f.init_fallspeed);
             }
@@ -122,7 +122,7 @@ impl<'a> Player<'a> {
                 // println!("{: >5}: {:021b}", format!("{:?}", k), u);
                 match b.state {
                     ButtonState::Press => {
-                        self.istate += u;
+                        self.istate |= u;
                         // println!("added:   {:032b}, {:?}", u, k);
                     },
                     ButtonState::Release => {
@@ -134,9 +134,8 @@ impl<'a> Player<'a> {
         }
     }
     fn update_vstate(&mut self) {
-        self.vstate -= VVal::Grounded;
+        self.vstate -= VolatileValue::GROUNDED;
     }
-
     pub fn get_debug_state(&mut self) -> String {
         // format!("{:?}", self.istate)
         format!("{:?}", self.f.aa[self.f.astate])
