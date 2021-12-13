@@ -5,7 +5,8 @@ pub mod constants;
 
 pub mod frame;
 pub mod animation;
-pub mod state;
+pub mod states;
+pub mod stateticker;
 pub mod fighter;
 pub mod stage;
 

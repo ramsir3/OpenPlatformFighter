@@ -1019,6 +1019,7 @@ checksum = "692fcb63b64b1758029e0a96ee63e049ce8c5948587f2f7208df04625e5f6b56"
 name = "open_platform_fighter"
 version = "0.1.0"
 dependencies = [
+ "bitflags",
  "enum-display-derive",
  "piston",
  "piston2d-graphics",

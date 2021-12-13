@@ -1,5 +1,6 @@
 #[macro_use]
 extern crate enum_display_derive;
+extern crate bitflags;
 
 extern crate glutin_window;
 extern crate graphics;
@@ -20,7 +21,7 @@ mod fighters;
 use common::constants::*;
 use driver::player::Player;
 use driver::controls::*;
-use fighters::test::*;
+use fighters::*;
 use common::stage::Stage;
 
 use std::io::{stdout, Write};
@@ -115,7 +116,7 @@ impl<'a> OPF<'a> {
             }
         }
         print!("\r");
-        stdout().flush();
+        stdout().flush().ok();
     }
 }
 
