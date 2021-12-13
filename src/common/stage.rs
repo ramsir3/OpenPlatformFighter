@@ -1,4 +1,5 @@
 use graphics::{Graphics, math::*, types::*, line, polygon};
+use Drawable;
 use common::constants::*;
 
 pub struct Platform<'a>(pub Polygon<'a>, pub Color);
@@ -20,8 +21,8 @@ pub struct Stage<'a> {
     pub platforms: Vec<Platform<'a>>,
     pub lightplatforms: Option<Vec<LightPlatform>>,
 }
-impl<'a> Stage<'a> {
-    pub fn draw<G: Graphics>(&self, t: Matrix2d, g: &mut G) {
+impl<'a> Drawable for Stage<'a> {
+    fn draw<G: Graphics>(&self, t: Matrix2d, g: &mut G) {
         for p in self.platforms.iter() {
             p.draw(multiply(t, translate(self.pos)), g);
         }
