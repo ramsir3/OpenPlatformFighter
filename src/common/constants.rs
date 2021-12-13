@@ -1,14 +1,22 @@
 use graphics::types::{Color, Radius, Vec2d};
 
-pub const WINDOW_SIZE: (f64, f64) = (320.0, 240.0);
+pub const WINDOW_SIZE: (f64, f64) = (640.0, 480.0);
 pub const FRAMES_PER_SECOND: u64 = 30;
 
-pub const HURT_BOX_COLOR: Color       = [1.0, 0.0, 0.0, 1.0];
-pub const HIT_BOX_COLOR:  Color       = [0.0, 0.0, 1.0, 1.0];
-pub const GRAB_BOX_COLOR: Color       = [1.0, 0.0, 1.0, 1.0];
-pub const LEDGE_GRAB_BOX_COLOR: Color = [1.0, 0.0, 1.0, 1.0];
-pub const SHEILD_BOX_COLOR: Color     = [1.0, 0.0, 1.0, 1.0];
-pub const BOX_COLORS: [Color; 5] = [HURT_BOX_COLOR, HIT_BOX_COLOR, GRAB_BOX_COLOR, LEDGE_GRAB_BOX_COLOR, SHEILD_BOX_COLOR];
+pub const ENTITY_COLLISION_BOX_COLOR: Color = [1.0, 0.1, 1.0, 0.4];
+pub const HURT_BOX_COLOR: Color             = [1.0, 0.0, 0.0, 0.8];
+pub const HIT_BOX_COLOR:  Color             = [0.0, 0.0, 1.0, 1.0];
+pub const GRAB_BOX_COLOR: Color             = [1.0, 0.0, 1.0, 1.0];
+pub const LEDGE_GRAB_BOX_COLOR: Color       = [1.0, 0.0, 1.0, 1.0];
+pub const SHEILD_BOX_COLOR: Color           = [1.0, 0.0, 1.0, 1.0];
+pub const BOX_COLORS: [Color; 6] = [
+    HURT_BOX_COLOR,
+    HIT_BOX_COLOR,
+    GRAB_BOX_COLOR,
+    LEDGE_GRAB_BOX_COLOR,
+    SHEILD_BOX_COLOR,
+    ENTITY_COLLISION_BOX_COLOR
+    ];
 
 pub const PLATFORM_COLOR: Color = [0.4, 0.4, 0.4, 1.0];
 pub const LIGHTPLATFORM_COLOR: Color = [0.0, 1.0, 1.0, 1.0];

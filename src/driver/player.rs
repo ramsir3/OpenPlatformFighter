@@ -3,7 +3,7 @@ use graphics::Graphics;
 use piston::input::{Button, ButtonArgs, ButtonState};
 
 use driver::controls::*;
-use common::{states::*, stateticker::*, animation::AnimationState, constants::*, fighter::*};
+use common::{states::*, stateticker::*, animation::AnimationState, constants::*, fighter::*, Drawable};
 
 // use std::fmt;
 
@@ -67,9 +67,6 @@ impl<'a> Player<'a> {
         self.update_vstate();
         self.istate.update();
         self.vstate.update();
-    }
-    pub fn draw<G: Graphics>(&self, t: Matrix2d, g: &mut G) {
-        self.f.draw(multiply(t, translate(self.pos)), g);
     }
     fn move_pos(&mut self, dt: f64) {
         self.pos = add(self.pos, mul_scalar(self.vel, dt));
@@ -139,5 +136,10 @@ impl<'a> Player<'a> {
     pub fn get_debug_state(&mut self) -> String {
         // format!("{:?}", self.istate)
         format!("{:?}", self.f.aa[self.f.astate])
+    }
+}
+impl<'a> Drawable for Player<'a> {
+    fn draw<G: Graphics>(&self, t: Matrix2d, g: &mut G) {
+        self.f.draw(multiply(t, translate(self.pos)), g);
     }
 }

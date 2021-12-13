@@ -10,6 +10,9 @@ pub mod stateticker;
 pub mod fighter;
 pub mod stage;
 
+use graphics::math::Matrix2d;
+use graphics::Graphics;
+
 pub trait Drawable {
-    fn draw(&self);
+    fn draw<G: Graphics>(&self, t: Matrix2d, g: &mut G);
 }

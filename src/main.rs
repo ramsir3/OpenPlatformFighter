@@ -23,6 +23,7 @@ use driver::player::Player;
 use driver::controls::*;
 use fighters::*;
 use common::stage::Stage;
+use common::Drawable;
 
 use std::io::{stdout, Write};
 
@@ -31,7 +32,6 @@ pub struct OPF<'a> {
     players: [Option<Player<'a>>; 4],
     stage: Stage<'a>,
 }
-
 impl<'a> OPF<'a> {
     #[allow(dead_code)]
     fn setup1(opengl: OpenGL) -> OPF<'a> {
@@ -129,7 +129,7 @@ fn main() {
         .build()
         .unwrap_or_else(|e| { panic!("Failed to build PistonWindow: {}", e) });
 
-    let mut opf = OPF::setup4(opengl);
+    let mut opf = OPF::setup1(opengl);
     //game loop
     let mut es = EventSettings::new();
     es.ups = FRAMES_PER_SECOND;

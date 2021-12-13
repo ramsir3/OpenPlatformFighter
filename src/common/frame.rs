@@ -1,5 +1,6 @@
 // use piston_window::{Graphics, math::Matrix2d, types::Color, ellipse, Ellipse};
-use graphics::{Graphics, math::*, types::*, ellipse, Ellipse};
+use Drawable;
+use graphics::{Graphics, math::*, types::*, ellipse, Ellipse, Polygon};
 use common::constants::{BOX_COLORS, N_SIDES};
 use std::fmt;
 
@@ -73,23 +74,26 @@ impl Default for FrameType {
 
 const NUM_BOX_TYPES: usize = 6;
 pub enum Frame<'a> {
+    NoBox,
+    EntityCollison([f64; 4]),
     Hurt(&'a [[f64; 3]]),
     Hit(&'a [[f64; 3]]),
     Grab(&'a [[f64; 3]]),
     LedgeGrab(&'a [[f64; 3]]),
     Sheild(&'a [[f64; 3]]),
-    NoBox
 }
 impl<'a> Frame<'a> {
-    pub fn draw<G: Graphics>(&self, t: Matrix2d, g: &mut G) {
-        match self {
-            Frame::Hurt(b)      => self.draw_box(BOX_COLORS[0], b, t, g),
-            Frame::Hit(b)       => self.draw_box(BOX_COLORS[1], b, t, g),
-            Frame::Grab(b)      => self.draw_box(BOX_COLORS[2], b, t, g),
-            Frame::LedgeGrab(b) => self.draw_box(BOX_COLORS[3], b, t, g),
-            Frame::Sheild(b)    => self.draw_box(BOX_COLORS[4], b, t, g),
-            Frame::NoBox        => {}
-        }
+    fn draw_ecb<G: Graphics>(&self, c: Color, points: &[f64; 4], t: Matrix2d, g: &mut G) {
+        Polygon::new(c)
+        .draw(
+            &[
+                [0.0, points[0]],
+                [points[1], (points[0]-points[2])/2.0],
+                [0.0, points[2]],
+                [points[3], (points[0]-points[2])/2.0],
+            ],
+            &Default::default(), t, g
+        );
     }
     fn draw_box<G: Graphics>(&self, c: Color, boxes: &[[f64; 3]], t: Matrix2d, g: &mut G) {
         for b in boxes {
@@ -98,6 +102,19 @@ impl<'a> Frame<'a> {
                 ellipse::circle(b[0], b[1], b[2]),
                 &Default::default(), t, g
             );
+        }
+    }
+}
+impl<'a> Drawable for Frame<'a> {
+    fn draw<G: Graphics>(&self, t: Matrix2d, g: &mut G) {
+        match self {
+            Frame::EntityCollison(b) => self.draw_ecb(BOX_COLORS[5], b, t, g),
+            Frame::Hurt(b)           => self.draw_box(BOX_COLORS[0], b, t, g),
+            Frame::Hit(b)            => self.draw_box(BOX_COLORS[1], b, t, g),
+            Frame::Grab(b)           => self.draw_box(BOX_COLORS[2], b, t, g),
+            Frame::LedgeGrab(b)      => self.draw_box(BOX_COLORS[3], b, t, g),
+            Frame::Sheild(b)         => self.draw_box(BOX_COLORS[4], b, t, g),
+            Frame::NoBox             => {}
         }
     }
 }
