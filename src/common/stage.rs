@@ -1,6 +1,6 @@
 use graphics::{Graphics, math::*, types::*, line, polygon};
 use Drawable;
-use common::constants::*;
+use common::constants::{LIGHTPLATFORM_COLOR, LIGHTPLATFORM_RADIUS, PLATFORM_COLOR, WINDOW_SIZE};
 
 pub struct Platform<'a>(pub Polygon<'a>, pub Color);
 impl<'a> Platform<'a> {
@@ -9,10 +9,10 @@ impl<'a> Platform<'a> {
     }
 }
 
-pub struct LightPlatform(pub Line, pub Color);
-impl LightPlatform {
-    pub fn draw<G: Graphics>(&self, t: Matrix2d, g: &mut G) {
-        line(self.1, LIGHTPLATFORM_RADIUS, self.0, t, g);
+pub struct LightPlatform(pub Line);
+impl Drawable for LightPlatform {
+    fn draw<G: Graphics>(&self, t: Matrix2d, g: &mut G) {
+        line(LIGHTPLATFORM_COLOR, LIGHTPLATFORM_RADIUS, self.0, t, g);
     }
 }
 

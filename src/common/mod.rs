@@ -16,3 +16,5 @@ use graphics::Graphics;
 pub trait Drawable {
     fn draw<G: Graphics>(&self, t: Matrix2d, g: &mut G);
 }
+
+pub trait StageCollideable {}

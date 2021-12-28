@@ -9,14 +9,6 @@ pub const HIT_BOX_COLOR:  Color             = [0.0, 0.0, 1.0, 1.0];
 pub const GRAB_BOX_COLOR: Color             = [1.0, 0.0, 1.0, 1.0];
 pub const LEDGE_GRAB_BOX_COLOR: Color       = [1.0, 0.0, 1.0, 1.0];
 pub const SHEILD_BOX_COLOR: Color           = [1.0, 0.0, 1.0, 1.0];
-pub const BOX_COLORS: [Color; 6] = [
-    HURT_BOX_COLOR,
-    HIT_BOX_COLOR,
-    GRAB_BOX_COLOR,
-    LEDGE_GRAB_BOX_COLOR,
-    SHEILD_BOX_COLOR,
-    ENTITY_COLLISION_BOX_COLOR
-    ];
 
 pub const PLATFORM_COLOR: Color = [0.4, 0.4, 0.4, 1.0];
 pub const LIGHTPLATFORM_COLOR: Color = [0.0, 1.0, 1.0, 1.0];
@@ -29,11 +21,6 @@ pub const LVEC : Vec2d = [ -1.0,  0.0 ];
 pub const UVEC : Vec2d = [  0.0, -1.0 ];
 pub const DVEC : Vec2d = [  0.0,  1.0 ];
 
-#[macro_export]
-macro_rules! mag {
-    ($x:expr) => {
-        {
-            ($x[0].powi(2) + $x[1].powi(2)).powf(0.5)
-        }
-    };
-}
+type BoxId = u32;
+type BoneId = u32;
+type FighterId = u32;

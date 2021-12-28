@@ -1,4 +1,5 @@
-#[macro_use]
+extern crate animmacro;
+use animmacro::gen_from_anim;
 extern crate enum_display_derive;
 extern crate bitflags;
 
@@ -27,12 +28,27 @@ use common::Drawable;
 
 use std::io::{stdout, Write};
 
+// use animmacro::gen_from_anim;
+
 pub struct OPF<'a> {
     gl: GlGraphics, // OpenGL drawing backend.
     players: [Option<Player<'a>>; 4],
     stage: Stage<'a>,
 }
 impl<'a> OPF<'a> {
+    #[allow(dead_code)]
+    fn setupc(opengl: OpenGL) -> OPF<'a> {
+        OPF {
+            gl: GlGraphics::new(opengl),
+            players: [
+                Some(Player::new(circle::new(), controls1(), [100.0, 100.0])),
+                None,
+                None,
+                None
+                ],
+            stage: Stage::default(),
+        }
+    }
     #[allow(dead_code)]
     fn setup1(opengl: OpenGL) -> OPF<'a> {
         OPF {
@@ -120,8 +136,13 @@ impl<'a> OPF<'a> {
     }
 }
 
+
 fn main() {
     println!("enter main");
+
+    let boneid: u32 = gen_from_anim!("src/fighters/test/bones.anim");
+    print!("{}", boneid);
+
     //init
     let opengl = OpenGL::V3_2;
     let mut window: Window = WindowSettings::new("Hello Piston!", WINDOW_SIZE)
@@ -129,7 +150,7 @@ fn main() {
         .build()
         .unwrap_or_else(|e| { panic!("Failed to build PistonWindow: {}", e) });
 
-    let mut opf = OPF::setup1(opengl);
+    let mut opf = OPF::setupc(opengl);
     //game loop
     let mut es = EventSettings::new();
     es.ups = FRAMES_PER_SECOND;

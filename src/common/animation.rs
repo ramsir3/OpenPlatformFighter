@@ -1,5 +1,6 @@
 use std::fmt;
 use std::fmt::Display;
+use enum_display_derive::Display;
 use graphics::Graphics;
 use graphics::math::Matrix2d;
 
@@ -81,7 +82,12 @@ impl<'a> Animation<'a> {
 }
 impl<'a> fmt::Debug for Animation<'a> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{} | {} | {} | {}", self.state, self.cur_partial, self.frametypes[self.cur_partial], self.frametypes[self.cur_partial].cur_frame())
+        write!(f, "{} | {} | {} | {}",
+            self.state,
+            self.cur_partial,
+            self.frametypes[self.cur_partial],
+            self.frametypes[self.cur_partial].cur_frame()
+        )
     }
 }
 impl<'a> Default for Animation<'a> {

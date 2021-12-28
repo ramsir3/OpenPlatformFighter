@@ -1,7 +1,7 @@
 // use piston_window::{Graphics, math::Matrix2d, types::Color, ellipse, Ellipse};
 use Drawable;
 use graphics::{Graphics, math::*, types::*, ellipse, Ellipse, Polygon};
-use common::constants::{BOX_COLORS, N_SIDES};
+use common::constants::{ENTITY_COLLISION_BOX_COLOR, HURT_BOX_COLOR, HIT_BOX_COLOR, GRAB_BOX_COLOR, LEDGE_GRAB_BOX_COLOR, SHEILD_BOX_COLOR, N_SIDES};
 use std::fmt;
 
 #[derive(Copy, Clone, Default)]
@@ -72,6 +72,33 @@ impl Default for FrameType {
     }
 }
 
+pub struct HitBoxData<'a> {
+    boxid: u32,
+    bone: u32,
+    part: u32,
+    circle: &'a [f64; 3],
+    flags: Option<BoxFlags>
+}
+
+pub struct BoxFlags {
+    // From https://www.ssbwiki.com/Hitbox
+    damage: f32,
+    angle: f32,
+    knockback_scaling: f32,
+    fixed_knockback: f32,
+    base_knockback: f32,
+    hitlag_multiplier: f32,
+    sdi_multiplier: f32,
+    shield_damage: f32,
+    groundness: bool,
+    clang: bool,
+    // effect,
+    // sound_effect,
+    // sound_level,
+    // rebound,
+}
+
+
 const NUM_BOX_TYPES: usize = 6;
 pub enum Frame<'a> {
     NoBox,
@@ -108,12 +135,12 @@ impl<'a> Frame<'a> {
 impl<'a> Drawable for Frame<'a> {
     fn draw<G: Graphics>(&self, t: Matrix2d, g: &mut G) {
         match self {
-            Frame::EntityCollison(b) => self.draw_ecb(BOX_COLORS[5], b, t, g),
-            Frame::Hurt(b)           => self.draw_box(BOX_COLORS[0], b, t, g),
-            Frame::Hit(b)            => self.draw_box(BOX_COLORS[1], b, t, g),
-            Frame::Grab(b)           => self.draw_box(BOX_COLORS[2], b, t, g),
-            Frame::LedgeGrab(b)      => self.draw_box(BOX_COLORS[3], b, t, g),
-            Frame::Sheild(b)         => self.draw_box(BOX_COLORS[4], b, t, g),
+            Frame::EntityCollison(b) => self.draw_ecb(ENTITY_COLLISION_BOX_COLOR, b, t, g),
+            Frame::Hurt(b)           => self.draw_box(HURT_BOX_COLOR            , b, t, g),
+            Frame::Hit(b)            => self.draw_box(HIT_BOX_COLOR             , b, t, g),
+            Frame::Grab(b)           => self.draw_box(GRAB_BOX_COLOR            , b, t, g),
+            Frame::LedgeGrab(b)      => self.draw_box(LEDGE_GRAB_BOX_COLOR      , b, t, g),
+            Frame::Sheild(b)         => self.draw_box(SHEILD_BOX_COLOR          , b, t, g),
             Frame::NoBox             => {}
         }
     }
