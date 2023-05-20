@@ -2,8 +2,10 @@ use graphics::math::*;
 use graphics::Graphics;
 use piston::input::{Button, ButtonArgs, ButtonState};
 
+use common::{
+    animation::AnimationState, constants::*, fighter::*, states::*, stateticker::*, Drawable,
+};
 use driver::controls::*;
-use common::{states::*, stateticker::*, animation::AnimationState, constants::*, fighter::*, Drawable};
 
 // use std::fmt;
 
@@ -27,10 +29,10 @@ impl<'a> Player<'a> {
             istate: InputValueTicker::new(InputValue::empty()),
             vstate: VolatileValueTicker::new(VolatileValue::GROUNDED),
             pos,
-            vel:  [  0.0,   0.0],
-            fvel: [  0.0,   0.0],
+            vel: [0.0, 0.0],
+            fvel: [0.0, 0.0],
             // acc:  [  0.0,   0.0],
-            jt:   (0.0, false),
+            jt: (0.0, false),
         }
     }
     pub fn update(&mut self, dt: f64) {
@@ -39,25 +41,40 @@ impl<'a> Player<'a> {
         self.f.update(!self.istate.is_empty());
         if self.istate.is_on(InputValue::S) {
             self.pos = [100.0, 100.0];
-            self.vel = [  0.0,   0.0];
-            self.fvel = [  0.0,   0.0];
+            self.vel = [0.0, 0.0];
+            self.fvel = [0.0, 0.0];
         }
         // let last_astate = self.f.astate;
-        if self.istate.is_on(InputValue::L | (InputValue::R | InputValue::D)) {
-            self.f.set_astate(AnimationState::Walk, true, self.istate.rising(InputValue::L | (InputValue::R | InputValue::D)));
+        if self
+            .istate
+            .is_on(InputValue::L | (InputValue::R | InputValue::D))
+        {
+            self.f.set_astate(
+                AnimationState::Walk,
+                true,
+                self.istate
+                    .rising(InputValue::L | (InputValue::R | InputValue::D)),
+            );
         }
         if self.istate.rising(InputValue::J) {
             // println!("rising: {}", self.is);
-            if self.f.set_astate(AnimationState::Jump, true, self.istate.rising(InputValue::J)) {
+            if self.f.set_astate(
+                AnimationState::Jump,
+                true,
+                self.istate.rising(InputValue::J),
+            ) {
                 self.vel = mul([1.0, 0.0], self.vel);
                 self.jt.1 = true;
             }
         }
         if self.istate.rising(InputValue::A) {
             // println!("rising: {}", self.is);
-            self.f.set_astate(AnimationState::Jab, true, self.istate.rising(InputValue::A));
+            self.f
+                .set_astate(AnimationState::Jab, true, self.istate.rising(InputValue::A));
         }
-        if self.istate.is_empty() || (self.istate.is_on(InputValue::J) && !self.istate.rising(InputValue::J)) {
+        if self.istate.is_empty()
+            || (self.istate.is_on(InputValue::J) && !self.istate.rising(InputValue::J))
+        {
             self.f.set_astate(AnimationState::Idle, false, false);
         }
 
@@ -88,9 +105,9 @@ impl<'a> Player<'a> {
         wvel = mul_scalar(wvel, self.f.walkspeed);
         if self.jt.1 {
             self.jt.0 += dt;
-            wvel = add(wvel, mul_scalar(UVEC, self.f.jumpspeed*dt));
+            wvel = add(wvel, mul_scalar(UVEC, self.f.jumpspeed * dt));
         }
-        if self.jt.0 >= self.f.jumpheight/self.f.jumpspeed {
+        if self.jt.0 >= self.f.jumpheight / self.f.jumpspeed {
             self.jt.0 = 0.0;
             self.jt.1 = false;
             self.fvel = mul_scalar(DVEC, self.f.init_fallspeed);
@@ -104,7 +121,7 @@ impl<'a> Player<'a> {
                 self.fvel = mul_scalar(DVEC, self.f.init_fallspeed);
             }
             if self.fvel[1] < self.f.max_fallspeed {
-                self.fvel = add(self.fvel, mul_scalar(DVEC, self.f.weight*dt));
+                self.fvel = add(self.fvel, mul_scalar(DVEC, self.f.weight * dt));
             }
         }
         self.vel = add(add(self.vel, wvel), self.fvel);
@@ -121,7 +138,7 @@ impl<'a> Player<'a> {
                     ButtonState::Press => {
                         self.istate |= u;
                         // println!("added:   {:032b}, {:?}", u, k);
-                    },
+                    }
                     ButtonState::Release => {
                         self.istate -= u;
                         // println!("removed: {:032b}, {:?}", u, k);
