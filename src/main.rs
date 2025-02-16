@@ -1,17 +1,11 @@
 #[macro_use]
 extern crate enum_display_derive;
-extern crate bitflags;
-
-extern crate glutin_window;
-extern crate graphics;
-extern crate opengl_graphics;
-extern crate piston;
 
 use glutin_window::GlutinWindow as Window;
-use opengl_graphics::{GlGraphics, OpenGL};
 use graphics::clear;
+use opengl_graphics::{GlGraphics, OpenGL};
 use piston::event_loop::{EventSettings, Events};
-use piston::input::{RenderArgs, RenderEvent, ButtonArgs, ButtonEvent, UpdateArgs, UpdateEvent};
+use piston::input::{ButtonArgs, ButtonEvent, RenderArgs, RenderEvent, UpdateArgs, UpdateEvent};
 use piston::window::WindowSettings;
 
 #[macro_use]
@@ -19,10 +13,10 @@ mod common;
 mod driver;
 mod fighters;
 use common::constants::*;
-use driver::player::Player;
-use driver::controls::*;
-use fighters::*;
 use common::stage::Stage;
+use driver::controls::*;
+use driver::player::Player;
+use fighters::*;
 
 use std::io::{stdout, Write};
 
@@ -41,8 +35,8 @@ impl<'a> OPF<'a> {
                 Some(Player::new(test::new(), controls1(), [100.0, 100.0])),
                 None,
                 None,
-                None
-                ],
+                None,
+            ],
             stage: Stage::default(),
         }
     }
@@ -54,8 +48,8 @@ impl<'a> OPF<'a> {
                 Some(Player::new(test::new(), controls1(), [100.0, 100.0])),
                 Some(Player::new(test::new(), controls2(), [175.0, 100.0])),
                 None,
-                None
-                ],
+                None,
+            ],
             stage: Stage::default(),
         }
     }
@@ -68,7 +62,7 @@ impl<'a> OPF<'a> {
                 Some(Player::new(test::new(), controls2(), [125.0, 100.0])),
                 Some(Player::new(test::new(), controls0(), [150.0, 100.0])),
                 Some(Player::new(test::new(), controls0(), [175.0, 100.0])),
-                ],
+            ],
             stage: Stage::default(),
         }
     }
@@ -84,7 +78,7 @@ impl<'a> OPF<'a> {
             for p in players.iter() {
                 match p {
                     Some(p) => p.draw(c.transform, gl),
-                    None => ()
+                    None => (),
                 }
             }
         });
@@ -93,7 +87,7 @@ impl<'a> OPF<'a> {
         for p in self.players.iter_mut() {
             match p {
                 Some(p) => p.update_inputs(args),
-                None => ()
+                None => (),
             }
         }
     }
@@ -101,7 +95,7 @@ impl<'a> OPF<'a> {
         for p in self.players.iter_mut() {
             match p {
                 Some(p) => p.update(args.dt),
-                None => ()
+                None => (),
             }
         }
     }
@@ -111,8 +105,8 @@ impl<'a> OPF<'a> {
             match p {
                 Some(p) => {
                     print!("{:}\t", p.get_debug_state());
-                },
-                None => ()
+                }
+                None => (),
             }
         }
         print!("\r");
@@ -123,11 +117,11 @@ impl<'a> OPF<'a> {
 fn main() {
     println!("enter main");
     //init
-    let opengl = OpenGL::V3_2;
+    let opengl = OpenGL::V4_5;
     let mut window: Window = WindowSettings::new("Hello Piston!", WINDOW_SIZE)
         .exit_on_esc(true)
         .build()
-        .unwrap_or_else(|e| { panic!("Failed to build PistonWindow: {}", e) });
+        .unwrap_or_else(|e| panic!("Failed to build PistonWindow: {}", e));
 
     let mut opf = OPF::setup4(opengl);
     //game loop
@@ -135,7 +129,6 @@ fn main() {
     es.ups = FRAMES_PER_SECOND;
     let mut events = Events::new(es);
     while let Some(e) = events.next(&mut window) {
-
         if let Some(args) = e.button_args() {
             opf.update_inputs(&args);
         }

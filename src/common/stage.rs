@@ -1,5 +1,5 @@
-use graphics::{Graphics, math::*, types::*, line, polygon};
-use common::constants::*;
+use crate::common::constants::*;
+use graphics::{line, math::*, polygon, types::*, Graphics};
 
 pub struct Platform<'a>(pub Polygon<'a>, pub Color);
 impl<'a> Platform<'a> {
@@ -37,17 +37,14 @@ impl<'a> Default for Stage<'a> {
         const W: f64 = 200.0;
         const H: f64 = 30.0;
         Stage {
-            pos: [(WINDOW_SIZE.0/2.0)-W/2.0, (WINDOW_SIZE.1*0.75)-H/2.0],
-            platforms: vec![
-                Platform(&[
-                    [0.0, 0.0],
-                    [W, 0.0],
-                    [W, H],
-                    [0.0, H],
-                ],
-                PLATFORM_COLOR
-                )
+            pos: [
+                (WINDOW_SIZE.0 / 2.0) - W / 2.0,
+                (WINDOW_SIZE.1 * 0.75) - H / 2.0,
             ],
+            platforms: vec![Platform(
+                &[[0.0, 0.0], [W, 0.0], [W, H], [0.0, H]],
+                PLATFORM_COLOR,
+            )],
             lightplatforms: None,
         }
     }

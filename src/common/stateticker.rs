@@ -1,14 +1,18 @@
-use common::states::{InputValue, VolatileValue};
-use std::ops::{SubAssign, BitOrAssign};
+use crate::common::states::{InputValue, VolatileValue};
 use std::fmt;
+use std::ops::{BitOrAssign, SubAssign};
 
 #[derive(Clone, Default)]
 pub struct InputValueTicker {
-    t0: InputValue, t1: InputValue
+    t0: InputValue,
+    t1: InputValue,
 }
 impl InputValueTicker {
     pub fn new(init: InputValue) -> Self {
-        InputValueTicker{t0: init, t1: InputValue::empty()}
+        InputValueTicker {
+            t0: init,
+            t1: InputValue::empty(),
+        }
     }
     pub fn update(&mut self) {
         self.t0 = self.t1;
@@ -58,11 +62,15 @@ impl fmt::Debug for InputValueTicker {
 
 #[derive(Clone, Default)]
 pub struct VolatileValueTicker {
-    t0: VolatileValue, t1: VolatileValue
+    t0: VolatileValue,
+    t1: VolatileValue,
 }
 impl VolatileValueTicker {
     pub fn new(init: VolatileValue) -> Self {
-        VolatileValueTicker{t0: init, t1: VolatileValue::empty()}
+        VolatileValueTicker {
+            t0: init,
+            t1: VolatileValue::empty(),
+        }
     }
     pub fn update(&mut self) {
         self.t0 = self.t1;

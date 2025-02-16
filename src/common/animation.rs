@@ -1,9 +1,9 @@
+use graphics::math::Matrix2d;
+use graphics::Graphics;
 use std::fmt;
 use std::fmt::Display;
-use graphics::Graphics;
-use graphics::math::Matrix2d;
 
-use common::frame::*;
+use crate::common::frame::*;
 
 pub const N_ANIM_STATES: usize = 4;
 
@@ -12,7 +12,7 @@ pub enum AnimationState {
     Idle,
     Walk,
     Jump,
-    Jab
+    Jab,
 }
 impl Default for AnimationState {
     fn default() -> Self {
@@ -26,18 +26,24 @@ pub struct Animation<'a> {
     pub partials: Vec<FrameData<'a>>,
     pub frametypes: Vec<FrameType>,
     pub num_partials: usize,
-    pub cur_partial: usize
+    pub cur_partial: usize,
 }
 impl<'a> Animation<'a> {
-    pub fn new(state: AnimationState, partials: Vec<FrameData<'a>>, frametypes: Vec<FrameType>) -> Self {
+    pub fn new(
+        state: AnimationState,
+        partials: Vec<FrameData<'a>>,
+        frametypes: Vec<FrameType>,
+    ) -> Self {
         let np = partials.len();
-        if np != frametypes.len() {panic!("frametypes len and partials len must be equal");}
+        if np != frametypes.len() {
+            panic!("frametypes len and partials len must be equal");
+        }
         Animation {
             state,
             partials,
             frametypes,
             num_partials: np,
-            cur_partial: 0
+            cur_partial: 0,
         }
     }
     pub fn state(&self) -> AnimationState {
@@ -59,13 +65,13 @@ impl<'a> Animation<'a> {
                 if self.frametypes[self.cur_partial].done() {
                     self.next_partial();
                 }
-            },
+            }
             FrameType::Repeat(_) => {
                 self.frametypes[self.cur_partial].tick();
                 if !active {
                     self.next_partial();
                 }
-            },
+            }
         }
     }
     pub fn reset(&mut self) {
@@ -81,14 +87,21 @@ impl<'a> Animation<'a> {
 }
 impl<'a> fmt::Debug for Animation<'a> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{} | {} | {} | {}", self.state, self.cur_partial, self.frametypes[self.cur_partial], self.frametypes[self.cur_partial].cur_frame())
+        write!(
+            f,
+            "{} | {} | {} | {}",
+            self.state,
+            self.cur_partial,
+            self.frametypes[self.cur_partial],
+            self.frametypes[self.cur_partial].cur_frame()
+        )
     }
 }
 impl<'a> Default for Animation<'a> {
     fn default() -> Self {
         Animation::new(
             AnimationState::Idle,
-            vec![FrameData(&[&[Frame::NoBox],])],
+            vec![FrameData(&[&[Frame::NoBox]])],
             vec![FrameType::default()],
         )
     }

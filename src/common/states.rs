@@ -5,7 +5,7 @@ use bitflags::bitflags;
 // use std::fmt;
 
 bitflags! {
-    #[derive(Default)]
+    #[derive(Copy, Clone, Default, PartialEq)]
     pub struct InputValue: u32 {
         const J    = 0b1_0000_0000_0000_0000;
         const L    = 0b0_1000_0000_0000_0000;
@@ -25,7 +25,7 @@ bitflags! {
         const TD   = 0b0_0000_0000_0000_0010;
         const TU   = 0b0_0000_0000_0000_0001;
     }
-    #[derive(Default)]
+    #[derive(Copy, Clone, Default, PartialEq)]
     pub struct VolatileValue: u32 {
         const GROUNDED        = 0b1_0000_0000_0000_0000;
         const ACTIVEINPUT     = 0b0_1000_0000_0000_0000;

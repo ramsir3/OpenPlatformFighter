@@ -1,9 +1,8 @@
-extern crate graphics;
+use crate::common::animation::{Animation, AnimationState, N_ANIM_STATES};
+use crate::common::frame::FrameData;
+use graphics::math::{Matrix2d, Scalar};
 use graphics::Graphics;
-use graphics::math::{Scalar, Matrix2d};
-use std::ops::{Index, IndexMut, AddAssign};
-use common::animation::{AnimationState, Animation, N_ANIM_STATES};
-use common::frame::FrameData;
+use std::ops::{AddAssign, Index, IndexMut};
 
 #[derive(Default)]
 pub struct AnimationArray<'a>([Animation<'a>; N_ANIM_STATES]);
@@ -26,14 +25,14 @@ impl<'a> IndexMut<AnimationState> for AnimationArray<'a> {
 }
 
 pub struct Fighter<'a> {
-    pub aa:             AnimationArray<'a>,
-    pub astate:         AnimationState,
-    pub weight:         Scalar,
-    pub walkspeed:      Scalar,
+    pub aa: AnimationArray<'a>,
+    pub astate: AnimationState,
+    pub weight: Scalar,
+    pub walkspeed: Scalar,
     pub init_fallspeed: Scalar,
-    pub max_fallspeed:  Scalar,
-    pub jumpheight:     Scalar,
-    pub jumpspeed:      Scalar,
+    pub max_fallspeed: Scalar,
+    pub jumpheight: Scalar,
+    pub jumpspeed: Scalar,
 }
 impl<'a> Fighter<'a> {
     pub fn add_anim(&mut self, a: Animation<'a>) {
@@ -53,12 +52,11 @@ impl<'a> Fighter<'a> {
                 return true;
             }
             return false;
-        } else if active && self.aa[self.astate].interruptable()
-        || (self.aa[self.astate].done()) {
+        } else if active && self.aa[self.astate].interruptable() || (self.aa[self.astate].done()) {
             // self.aa[self.astate].reset();
             self.astate = state;
             self.aa[self.astate].reset();
-            return true
+            return true;
         }
         false
     }
@@ -66,8 +64,16 @@ impl<'a> Fighter<'a> {
 impl<'a> Default for Fighter<'a> {
     fn default() -> Self {
         let mut aa: AnimationArray = Default::default();
-        aa += Animation::new(AnimationState::Idle, vec![FrameData::default()], vec![Default::default()]);
-        aa += Animation::new(AnimationState::Walk, vec![FrameData::default()], vec![Default::default()]);
+        aa += Animation::new(
+            AnimationState::Idle,
+            vec![FrameData::default()],
+            vec![Default::default()],
+        );
+        aa += Animation::new(
+            AnimationState::Walk,
+            vec![FrameData::default()],
+            vec![Default::default()],
+        );
         // aa += Animation {state: AnimationState::Idle, grabboxes:Some(FrameData::default()), ..Default::default()};
         Fighter {
             aa,
