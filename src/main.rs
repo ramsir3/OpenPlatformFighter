@@ -1,13 +1,12 @@
 #[macro_use]
 extern crate enum_display_derive;
-
 use glutin_window::GlutinWindow as Window;
 use graphics::clear;
 use opengl_graphics::{GlGraphics, OpenGL};
 use piston::event_loop::{EventSettings, Events};
 use piston::input::{ButtonArgs, ButtonEvent, RenderArgs, RenderEvent, UpdateArgs, UpdateEvent};
-use piston::window::WindowSettings;
-
+use piston::window::{OpenGLWindow, WindowSettings};
+extern crate gl;
 #[macro_use]
 mod common;
 mod driver;
@@ -117,12 +116,18 @@ impl<'a> OPF<'a> {
 fn main() {
     println!("enter main");
     //init
-    let opengl = OpenGL::V4_5;
+    let opengl = OpenGL::V2_1;
+
     let mut window: Window = WindowSettings::new("Hello Piston!", WINDOW_SIZE)
+        .graphics_api(opengl)
         .exit_on_esc(true)
+        .resizable(false)
         .build()
         .unwrap_or_else(|e| panic!("Failed to build PistonWindow: {}", e));
+    // Load the OpenGL function pointers
+    gl::load_with(|s| window.get_proc_address(s) as *const _);
 
+    // OpenGL::load_with(|s| window.get_proc_address(s));
     let mut opf = OPF::setup4(opengl);
     //game loop
     let mut es = EventSettings::new();
